@@ -29,6 +29,10 @@ namespace DKC3MapEditionHelper
                     else
                         mapEditionHelper.CompressAndImportAllMaps();
                     break;
+                case "edit":
+                    if (numberArgument.HasValue)
+                        mapEditionHelper.EditMap(numberArgument.Value);
+                    break;
                 default:
                     Console.WriteLine("Invalid arguments.");
                     break;

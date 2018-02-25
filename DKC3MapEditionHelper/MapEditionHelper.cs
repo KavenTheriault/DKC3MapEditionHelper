@@ -37,6 +37,20 @@ namespace DKC3MapEditionHelper
             ExportMap(map);
         }
 
+        public void EditMap(int number)
+        {
+            var map = _configurationAssistant.Maps.FirstOrDefault(x => x.Number == number);
+
+            if (map == null)
+            {
+                Console.WriteLine($"Map with number ({number}) not found.");
+                return;
+            }
+
+            ExportMap(map);
+            _mapToolAssistant.Platinium(GetProjectFilePath(map));
+        }
+
         public void CompressAndImportAllMaps()
         {
             BackupRomFile();
@@ -141,8 +155,8 @@ namespace DKC3MapEditionHelper
             var projectFileText = FmfToPlatiniumProject.GetPlatiniumProjectFile(
                 GetFmfFilePath(map),
                 Path.Combine(GetMapWorkingDirectory(map), map.ChipName));
-            var filePath = Path.Combine(GetMapWorkingDirectory(map), $"platinium_{map.Key}.xml");
-            
+            var filePath = GetProjectFilePath(map);
+
             File.WriteAllText(filePath, projectFileText);
             Console.WriteLine($"Added/Updated project file at ({filePath}).");
         }
@@ -167,6 +181,12 @@ namespace DKC3MapEditionHelper
         private string GetSdkFilePath(Map map)
         {
             var fmfFileName = $"{map.Key}.sdk";
+            return Path.Combine(GetMapWorkingDirectory(map), fmfFileName);
+        }
+
+        private string GetProjectFilePath(Map map)
+        {
+            var fmfFileName = $"platinium_{map.Key}.xml";
             return Path.Combine(GetMapWorkingDirectory(map), fmfFileName);
         }
     }

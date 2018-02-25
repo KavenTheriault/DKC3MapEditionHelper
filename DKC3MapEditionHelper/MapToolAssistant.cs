@@ -50,6 +50,15 @@ namespace DKC3MapEditionHelper
                 });
         }
 
+        public void Platinium(string projectFilePath)
+        {
+            ExecuteMapTool(_configurationAssistant.AppSettings.PlatiniumPath,
+                new[]
+                {
+                    projectFilePath
+                });
+        }
+
         private void ExecuteMapTool(string processName, IEnumerable<string> arguments)
         {
             if (!_configurationAssistant.AppSettings.WineMode)

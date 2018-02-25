@@ -60,7 +60,7 @@ namespace DKC3MapEditionHelper
             platiniumFile = platiniumFile.Replace("{width}", fmfData.Width.ToString());
             platiniumFile = platiniumFile.Replace("{height}", fmfData.Height.ToString());
             
-            platiniumFile = platiniumFile.Replace("{chip_file_name}", Path.GetFileName(chipFilePath));
+            platiniumFile = platiniumFile.Replace("{chip_file_name}", chipFilePath);
             platiniumFile = platiniumFile.Replace("{chip_width}", chipImageSize.Width.ToString());
             platiniumFile = platiniumFile.Replace("{chip_height}", chipImageSize.Height.ToString());
 

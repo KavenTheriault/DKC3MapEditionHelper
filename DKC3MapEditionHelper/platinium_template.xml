@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<map width="{width}" height="{height}" chipwidth="32" chipheight="32" bitcount="16" relativepath="0" align="fixed">
+<map width="{width}" height="{height}" chipwidth="32" chipheight="32" bitcount="16" relativepath="1" align="fixed">
 <colorkey red="0" green="0" blue="0" enable="false"/>
 <invisible value="0" enable="false"/>
 <parts index="0" source="{chip_file_name}" width="{chip_width}" height="{chip_height}"/>

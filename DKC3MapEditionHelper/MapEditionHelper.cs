@@ -65,7 +65,7 @@ namespace DKC3MapEditionHelper
         {
             Console.WriteLine($"Exporting FMF and HDR files for ({map.Name}).");
 
-            var mapWorkingDirectory = Path.Combine(_configurationAssistant.AppSettings.WorkingDirectory, map.Key);
+            var mapWorkingDirectory = GetMapWorkingDirectory(map);
 
             if (!Directory.Exists(mapWorkingDirectory))
             {
@@ -75,18 +75,20 @@ namespace DKC3MapEditionHelper
 
             _mapToolAssistant.MapExport(
                 _configurationAssistant.AppSettings.RomPath,
-                GetFmfFilePath(map, mapWorkingDirectory),
-                GetHdrFilePath(map, mapWorkingDirectory),
+                GetFmfFilePath(map),
+                GetHdrFilePath(map),
                 map.Number);
 
-            CopyChipFileInWorkingDirectory(map.ChipName, mapWorkingDirectory);
+            CopyChipFileInWorkingDirectory(map);
+            CreateProjectFile(map);
+
             Console.WriteLine($"Exported FMF and HDR files of map ({map.Number}) in ({mapWorkingDirectory}).");
         }
 
-        private void CopyChipFileInWorkingDirectory(string chipName, string mapWorkingDirectory)
+        private void CopyChipFileInWorkingDirectory(Map map)
         {
-            var sourceChipPath = Path.Combine(_configurationAssistant.AppSettings.ChipsFileDirectory, chipName);
-            var destinationChipPath = Path.Combine(mapWorkingDirectory, chipName);
+            var sourceChipPath = Path.Combine(_configurationAssistant.AppSettings.ChipsFileDirectory, map.ChipName);
+            var destinationChipPath = Path.Combine(GetMapWorkingDirectory(map), map.ChipName);
 
             if (File.Exists(destinationChipPath))
                 return;
@@ -99,12 +101,11 @@ namespace DKC3MapEditionHelper
         {
             Console.WriteLine($"Compressing and importing file in rom for ({map.Name}).");
 
-            var mapWorkingDirectory = Path.Combine(_configurationAssistant.AppSettings.WorkingDirectory, map.Key);
-            var sdkFilePath = GetSdkFilePath(map, mapWorkingDirectory);
+            var sdkFilePath = GetSdkFilePath(map);
 
             _mapToolAssistant.MapCompress(
-                GetFmfFilePath(map, mapWorkingDirectory),
-                GetHdrFilePath(map, mapWorkingDirectory),
+                GetFmfFilePath(map),
+                GetHdrFilePath(map),
                 sdkFilePath,
                 map.Number);
 
@@ -135,22 +136,38 @@ namespace DKC3MapEditionHelper
             Console.WriteLine($"Added file at ({backupPath}).");
         }
 
-        private static string GetFmfFilePath(Map map, string directory)
+        private void CreateProjectFile(Map map)
+        {
+            var projectFileText = FmfToPlatiniumProject.GetPlatiniumProjectFile(
+                GetFmfFilePath(map),
+                Path.Combine(GetMapWorkingDirectory(map), map.ChipName));
+            var filePath = Path.Combine(GetMapWorkingDirectory(map), $"platinium_{map.Key}.xml");
+            
+            File.WriteAllText(filePath, projectFileText);
+            Console.WriteLine($"Added/Updated project file at ({filePath}).");
+        }
+
+        private string GetMapWorkingDirectory(Map map)
+        {
+            return Path.Combine(_configurationAssistant.AppSettings.WorkingDirectory, map.Key);
+        }
+
+        private string GetFmfFilePath(Map map)
         {
             var fmfFileName = $"{map.Key}.fmf";
-            return Path.Combine(directory, fmfFileName);
+            return Path.Combine(GetMapWorkingDirectory(map), fmfFileName);
         }
 
-        private static string GetHdrFilePath(Map map, string directory)
+        private string GetHdrFilePath(Map map)
         {
             var fmfFileName = $"{map.Key}.hdr";
-            return Path.Combine(directory, fmfFileName);
+            return Path.Combine(GetMapWorkingDirectory(map), fmfFileName);
         }
 
-        private static string GetSdkFilePath(Map map, string directory)
+        private string GetSdkFilePath(Map map)
         {
             var fmfFileName = $"{map.Key}.sdk";
-            return Path.Combine(directory, fmfFileName);
+            return Path.Combine(GetMapWorkingDirectory(map), fmfFileName);
         }
     }
 }

@@ -10,5 +10,6 @@
         public string PlatiniumPath { get; set; }
         public string ChipsFileDirectory { get; set; }
         public string WorkingDirectory { get; set; }
+        public string EmulatorPath { get; set; }
     }
 }

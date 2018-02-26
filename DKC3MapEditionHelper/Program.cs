@@ -1,4 +1,6 @@
 ﻿using System;
+using DKC3MapEditionHelper.assistants;
+using DKC3MapEditionHelper.configurations;
 
 namespace DKC3MapEditionHelper
 {
@@ -12,26 +14,29 @@ namespace DKC3MapEditionHelper
                 return;
             }
 
-            var mapEditionHelper = new MapEditionHelper();
             var numberArgument = GetNumberArgument(args);
 
             switch (args[0])
             {
                 case "export":
                     if (numberArgument.HasValue)
-                        mapEditionHelper.ExportMap(numberArgument.Value);
+                        MapEditionAssistant.ExportMap(numberArgument.Value);
                     else
-                        mapEditionHelper.ExportAllMaps();
+                        MapEditionAssistant.ExportAllMaps();
                     break;
                 case "import":
                     if (numberArgument.HasValue)
-                        mapEditionHelper.CompressAndImportMap(numberArgument.Value);
+                        MapEditionAssistant.CompressAndImportMap(numberArgument.Value);
                     else
-                        mapEditionHelper.CompressAndImportAllMaps();
+                        MapEditionAssistant.CompressAndImportAllMaps();
                     break;
                 case "edit":
                     if (numberArgument.HasValue)
-                        mapEditionHelper.EditMap(numberArgument.Value);
+                        MapEditionAssistant.EditMap(numberArgument.Value);
+                    break;
+                case "test":
+                    ProcessAssistant.ExecuteProcess(AppConfiguration.AppSettings.EmulatorPath,
+                        AppConfiguration.AppSettings.RomPath);
                     break;
                 default:
                     Console.WriteLine("Invalid arguments.");

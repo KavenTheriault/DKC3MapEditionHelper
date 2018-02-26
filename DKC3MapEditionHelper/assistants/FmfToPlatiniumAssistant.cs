@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using DKC3MapEditionHelper.objects;
 
-namespace DKC3MapEditionHelper
+namespace DKC3MapEditionHelper.assistants
 {
-    public static class FmfPlatiniumConverter
+    public static class FmfToPlatiniumAssistant
     {
         private const int FmfWidthIndex = 8;
         private const int FmfHeightIndex = 12;

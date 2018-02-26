@@ -4,12 +4,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace DKC3MapEditionHelper.configurations
 {
-    public class ConfigurationAssistant
+    public static class AppConfiguration
     {
-        public AppSettings AppSettings { get; }
-        public List<Map> Maps { get; }
+        public static AppSettings AppSettings { get; }
+        public static List<Map> Maps { get; }
 
-        public ConfigurationAssistant()
+        static AppConfiguration()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

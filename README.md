@@ -30,11 +30,11 @@ $ dkc3tool.sh export [map_number]
 ```
 Import all maps
 ```sh
-$ dkc3tool.sh export
+$ dkc3tool.sh import
 ```
-Import specific maps
+Import specific map
 ```sh
-$ dkc3tool.sh export [map_number]
+$ dkc3tool.sh import [map_number]
 ```
 Auto open Platinium with specific map and auto save in rom on exit
 ```sh

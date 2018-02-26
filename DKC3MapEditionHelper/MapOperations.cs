@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using DKC3MapEditionHelper.assistants;
 using DKC3MapEditionHelper.configurations;
 
-namespace DKC3MapEditionHelper.assistants
+namespace DKC3MapEditionHelper
 {
-    public static class MapEditionAssistant
+    public static class MapOperations
     {
         public static void ExportAllMaps()
         {

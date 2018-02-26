@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DKC3MapEditionHelper.assistants;
 using DKC3MapEditionHelper.configurations;
 
@@ -20,19 +21,21 @@ namespace DKC3MapEditionHelper
             {
                 case "export":
                     if (numberArgument.HasValue)
-                        MapEditionAssistant.ExportMap(numberArgument.Value);
+                        MapOperations.ExportMap(numberArgument.Value);
                     else
-                        MapEditionAssistant.ExportAllMaps();
+                        MapOperations.ExportAllMaps();
                     break;
                 case "import":
                     if (numberArgument.HasValue)
-                        MapEditionAssistant.CompressAndImportMap(numberArgument.Value);
+                        MapOperations.CompressAndImportMap(numberArgument.Value);
                     else
-                        MapEditionAssistant.CompressAndImportAllMaps();
+                        MapOperations.CompressAndImportAllMaps();
                     break;
                 case "edit":
                     if (numberArgument.HasValue)
-                        MapEditionAssistant.EditMap(numberArgument.Value);
+                        MapOperations.EditMap(numberArgument.Value);
+                    else
+                        Console.WriteLine("Please provide the map number to edit.");
                     break;
                 case "test":
                     ProcessAssistant.ExecuteProcess(AppConfiguration.AppSettings.EmulatorPath,
@@ -44,9 +47,9 @@ namespace DKC3MapEditionHelper
             }
         }
 
-        private static int? GetNumberArgument(string[] args)
+        private static int? GetNumberArgument(IReadOnlyList<string> args)
         {
-            if (args.Length <= 1)
+            if (args.Count <= 1)
                 return null;
 
             return int.Parse(args[1]);

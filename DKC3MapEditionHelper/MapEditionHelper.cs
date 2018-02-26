@@ -49,6 +49,10 @@ namespace DKC3MapEditionHelper
 
             ExportMap(map);
             _mapToolAssistant.Platinium(GetProjectFilePath(map));
+
+            OverrideFmfFile(map);
+            BackupRomFile();
+            CompressAndImportMap(map);
         }
 
         public void CompressAndImportAllMaps()
@@ -152,13 +156,22 @@ namespace DKC3MapEditionHelper
 
         private void CreateProjectFile(Map map)
         {
-            var projectFileText = FmfToPlatiniumProject.GetPlatiniumProjectFile(
+            var projectFileText = FmfPlatiniumConverter.GeneratePlatiniumProjectFile(
                 GetFmfFilePath(map),
                 Path.Combine(GetMapWorkingDirectory(map), map.ChipName));
             var filePath = GetProjectFilePath(map);
 
             File.WriteAllText(filePath, projectFileText);
             Console.WriteLine($"Added/Updated project file at ({filePath}).");
+        }
+
+        private void OverrideFmfFile(Map map)
+        {
+            var fmfFilePath = GetFmfFilePath(map);
+            var bytes = FmfPlatiniumConverter.GenerateFmfWithPlaniniumProjectFile(fmfFilePath, GetProjectFilePath(map));
+
+            File.WriteAllBytes(fmfFilePath, bytes);
+            Console.WriteLine($"Overrided FMF file ({fmfFilePath}).");
         }
 
         private string GetMapWorkingDirectory(Map map)

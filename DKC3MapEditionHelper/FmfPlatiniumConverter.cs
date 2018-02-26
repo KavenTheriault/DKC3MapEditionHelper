@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using DKC3MapEditionHelper.objects;
 
 namespace DKC3MapEditionHelper
 {
-    public static class FmfToPlatiniumProject
+    public static class FmfPlatiniumConverter
     {
         private const int FmfWidthIndex = 8;
         private const int FmfHeightIndex = 12;
@@ -50,7 +51,7 @@ namespace DKC3MapEditionHelper
             return chipImage.Size;
         }
 
-        public static string GetPlatiniumProjectFile(string fmfFilePath, string chipFilePath)
+        public static string GeneratePlatiniumProjectFile(string fmfFilePath, string chipFilePath)
         {
             var fmfData = ReadFmfFile(fmfFilePath);
             var chipImageSize = GetChipImageSize(chipFilePath);
@@ -59,17 +60,19 @@ namespace DKC3MapEditionHelper
 
             platiniumFile = platiniumFile.Replace("{width}", fmfData.Width.ToString());
             platiniumFile = platiniumFile.Replace("{height}", fmfData.Height.ToString());
-            
+
             platiniumFile = platiniumFile.Replace("{chip_file_name}", chipFilePath);
             platiniumFile = platiniumFile.Replace("{chip_width}", chipImageSize.Width.ToString());
             platiniumFile = platiniumFile.Replace("{chip_height}", chipImageSize.Height.ToString());
 
             var dataString = new StringBuilder();
-            
-            for (var i = 0; i < fmfData.Height; i++) {
-                for (var j = 0; j < fmfData.Width; j++) {
+
+            for (var i = 0; i < fmfData.Height; i++)
+            {
+                for (var j = 0; j < fmfData.Width; j++)
+                {
                     dataString.Append(fmfData.Datas[i, j]);
-                    
+
                     if (j != fmfData.Width - 1)
                         dataString.Append(",");
                 }
@@ -77,10 +80,32 @@ namespace DKC3MapEditionHelper
                 if (i != fmfData.Height - 1)
                     dataString.Append(Environment.NewLine);
             }
-            
+
             platiniumFile = platiniumFile.Replace("{datas}", dataString.ToString());
 
             return platiniumFile;
+        }
+
+        public static byte[] GenerateFmfWithPlaniniumProjectFile(string fmfFilePath, string projectFilePath)
+        {
+            var allBytes = File.ReadAllBytes(fmfFilePath);
+            var resultBytes = allBytes.Take(FmfDataIndex).ToList();
+
+            var projectFileText = File.ReadAllText(projectFilePath);
+
+            var start = projectFileText.IndexOf("<data>", StringComparison.Ordinal) + 6;
+            var end = projectFileText.IndexOf("</data>", StringComparison.Ordinal);
+
+            var data = projectFileText.Substring(start, end - start).Replace("\r", "").Trim().Replace("\n", ",");
+            var values = data.Split(",");
+
+            foreach (var value in values)
+            {
+                var number = short.Parse(value);
+                resultBytes.AddRange(BitConverter.GetBytes(number));
+            }
+
+            return resultBytes.ToArray();
         }
     }
 }

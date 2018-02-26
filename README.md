@@ -32,7 +32,7 @@ Import all maps
 ```sh
 $ dkc3tool.sh import
 ```
-Import specific maps
+Import specific map
 ```sh
 $ dkc3tool.sh import [map_number]
 ```

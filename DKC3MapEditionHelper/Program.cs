@@ -7,52 +7,88 @@ namespace DKC3MapEditionHelper
 {
     internal static class Program
     {
+        private static ToolTask _toolTask;
+        private static int? _mapNumber;
         private static void Main(string[] args)
         {
-            if (args.Length == 0)
+            if (ValidateAndExtractArguments(args))
             {
-                Console.WriteLine("Please enter arguments.");
-                return;
+                if (!TryExecuteTask())
+                    ShowArgumentsError();
             }
-
-            var numberArgument = GetNumberArgument(args);
-
-            switch (args[0])
-            {
-                case "export":
-                    if (numberArgument.HasValue)
-                        MapOperations.ExportMap(numberArgument.Value);
-                    else
-                        MapOperations.ExportAllMaps();
-                    break;
-                case "import":
-                    if (numberArgument.HasValue)
-                        MapOperations.CompressAndImportMap(numberArgument.Value);
-                    else
-                        MapOperations.CompressAndImportAllMaps();
-                    break;
-                case "edit":
-                    if (numberArgument.HasValue)
-                        MapOperations.EditMap(numberArgument.Value);
-                    else
-                        Console.WriteLine("Please provide the map number to edit.");
-                    break;
-                case "test":
-                    ProcessAssistant.ExecuteProcess(AppConfiguration.AppSettings.EmulatorPath,
-                        AppConfiguration.AppSettings.RomPath);
-                    break;
-                default:
-                    Console.WriteLine("Invalid arguments.");
-                    break;
-            }
+            else
+                ShowArgumentsError();
         }
 
-        private static int? GetNumberArgument(IReadOnlyList<string> args)
+        private static bool TryExecuteTask()
         {
-            if (args.Count <= 1)
+            if (_mapNumber.HasValue)
+                return TryExecuteMapTask(_mapNumber.Value);
+            else
+                return TryExecuteGeneralTask();
+        }
+
+        private static void ShowArgumentsError()
+        {
+            Console.WriteLine("Invalid arguments. Arguments are: [task] [map_number]");
+        }
+
+        private static bool ValidateAndExtractArguments(string[] args)
+        {
+            if (args.Length == 0)
+                return false;
+
+            if (!Enum.TryParse(typeof(ToolTask), args[0], out var toolTask))
+                return false;
+
+            _toolTask = (ToolTask)toolTask;
+            _mapNumber = ExtractMapNumber(args);
+
+            return true;
+        }
+
+        private static int? ExtractMapNumber(string[] args)
+        {
+            if (args.Length <= 1)
                 return null;
 
             return int.Parse(args[1]);
+        }
+        private static bool TryExecuteMapTask(int mapNumber)
+        {
+            switch (_toolTask)
+            {
+                case ToolTask.export:
+                    MapOperations.ExportMap(mapNumber);
+                    return true;
+                case ToolTask.import:
+                    MapOperations.CompressAndImportMap(mapNumber);
+                    return true;
+                case ToolTask.edit:
+                    MapOperations.EditMap(mapNumber);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool TryExecuteGeneralTask()
+        {
+            switch (_toolTask)
+            {
+                case ToolTask.export:
+                    MapOperations.ExportAllMaps();
+                    return true;
+                case ToolTask.import:
+                    MapOperations.CompressAndImportAllMaps();
+                    return true;
+                case ToolTask.test:
+                    ProcessAssistant.ExecuteProcess(AppConfiguration.AppSettings.EmulatorPath,
+                        AppConfiguration.AppSettings.RomPath);
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
